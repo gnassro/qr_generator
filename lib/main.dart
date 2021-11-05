@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 void main() => runApp(const MyApp());
 
@@ -28,6 +29,13 @@ class _MyCustomFormState extends State<MyCustomForm> {
   // Create a text controller and use it to retrieve the current value
   // of the TextField.
   final myController = TextEditingController();
+  String? inputTextToGenerate;
+
+  @override
+  void initState() {
+    super.initState();
+    inputTextToGenerate = "";
+  }
 
   @override
   void dispose() {
@@ -52,25 +60,28 @@ class _MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
           ),
-          Flexible(
-            child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        // Retrieve the text the that user has entered by using the
-                        // TextEditingController.
-                        content: Text(myController.text),
-                      );
-                    },
-                  );
-                },
-                child: const Text("Generate")
-            ),
-          )
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  inputTextToGenerate = myController.text;
+                });
+              },
+              child: const Text("Generate")
+          ),
+          _generateQRImage(inputTextToGenerate),
         ],
       ),
     );
   }
+}
+
+Widget _generateQRImage (String? textToGenerate) {
+  if (textToGenerate != "") {
+    return QrImage(
+      data: textToGenerate!,
+      version: QrVersions.auto,
+      size: 200.0,
+    );
+  }
+  return const Text ("");
 }
