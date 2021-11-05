@@ -42,7 +42,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
       appBar: AppBar(
         title: const Text('Retrieve Text Input'),
       ),
-      body: Row(
+      body: Column(
         children: [
           Flexible(
             child: Padding(
