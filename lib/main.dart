@@ -46,18 +46,20 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Row(
-          children: [
-            TextField(
-              controller: myController,
-            ),
-            ElevatedButton(
-                onPressed: () {
+        child: Expanded(
+          child: Row(
+            children: [
+              TextField(
+                controller: myController,
+              ),
+              ElevatedButton(
+                  onPressed: () {
 
-                },
-                child: const Text("Generate")
-            )
-          ],
+                  },
+                  child: const Text("Generate")
+              )
+            ],
+          ),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
