@@ -52,20 +52,22 @@ class _MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
           ),
-          ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      // Retrieve the text the that user has entered by using the
-                      // TextEditingController.
-                      content: Text(myController.text),
-                    );
-                  },
-                );
-              },
-              child: const Text("Generate")
+          Flexible(
+            child: ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        // Retrieve the text the that user has entered by using the
+                        // TextEditingController.
+                        content: Text(myController.text),
+                      );
+                    },
+                  );
+                },
+                child: const Text("Generate")
+            ),
           )
         ],
       ),
