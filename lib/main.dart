@@ -44,10 +44,12 @@ class _MyCustomFormState extends State<MyCustomForm> {
       ),
       body: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: myController,
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: myController,
+              ),
             ),
           ),
         ],
