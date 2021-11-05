@@ -42,11 +42,15 @@ class _MyCustomFormState extends State<MyCustomForm> {
       appBar: AppBar(
         title: const Text('Retrieve Text Input'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: TextField(
-          controller: myController,
-        ),
+      body: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: myController,
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         // When the user presses the button, show an alert dialog containing
