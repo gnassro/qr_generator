@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                   onPressed: () {
-
+                    print("tap");
                   },
                   child: const Text("Generate")
               )
