@@ -56,6 +56,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
                 controller: myController,
               ),
             ),
