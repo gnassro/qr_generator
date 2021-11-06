@@ -83,6 +83,7 @@ Widget _generateQRImage (String? textToGenerate) {
       data: textToGenerate!,
       version: QrVersions.auto,
       size: 200.0,
+      gapless: false,
     );
   }
   return const Text ("");
