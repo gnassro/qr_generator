@@ -84,6 +84,10 @@ Widget _generateQRImage (String? textToGenerate) {
       version: QrVersions.auto,
       size: 200.0,
       gapless: false,
+      embeddedImage: const AssetImage('assets/images/my_embedded_image.png'),
+      embeddedImageStyle: QrEmbeddedImageStyle(
+        size: const Size(80, 80),
+      ),
     );
   }
   return const Text ("");
