@@ -56,6 +56,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
                 controller: myController,
               ),
             ),
@@ -69,18 +71,35 @@ class _MyCustomFormState extends State<MyCustomForm> {
               child: const Text("Generate")
           ),
           _generateQRImage(inputTextToGenerate),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  QrPainter(
+                      data: inputTextToGenerate!,
+                      version: QrVersions.auto
+                  );
+                });
+              },
+              child: const Text("Download")
+          ),
         ],
       ),
     );
   }
 }
 
+
 Widget _generateQRImage (String? textToGenerate) {
   if (textToGenerate != "") {
     return QrImage(
       data: textToGenerate!,
       version: QrVersions.auto,
-      size: 200.0,
+      semanticsLabel: "Qr",
+      gapless: false,
+      embeddedImage: const AssetImage('assets/images/my_embedded_image.png'),
+      embeddedImageStyle: QrEmbeddedImageStyle(
+        size: const Size(40, 40),
+      ),
     );
   }
   return const Text ("");
