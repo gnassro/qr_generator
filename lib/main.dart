@@ -71,11 +71,23 @@ class _MyCustomFormState extends State<MyCustomForm> {
               child: const Text("Generate")
           ),
           _generateQRImage(inputTextToGenerate),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  QrPainter(
+                      data: inputTextToGenerate!,
+                      version: QrVersions.auto
+                  );
+                });
+              },
+              child: const Text("Download")
+          ),
         ],
       ),
     );
   }
 }
+
 
 Widget _generateQRImage (String? textToGenerate) {
   if (textToGenerate != "") {
