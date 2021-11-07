@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -74,10 +76,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
           ElevatedButton(
               onPressed: () {
                 setState(() {
-                  QrPainter(
-                      data: inputTextToGenerate!,
-                      version: QrVersions.auto
-                  );
+                  toQrImageData(inputTextToGenerate!);
                 });
               },
               child: const Text("Download")
@@ -88,6 +87,20 @@ class _MyCustomFormState extends State<MyCustomForm> {
   }
 }
 
+
+Future<dynamic> toQrImageData(String text) async {
+  try {
+    final image = await QrPainter(
+      data: text,
+      version: QrVersions.auto,
+      gapless: false,
+    ).toImage(300);
+    final a = await image.toByteData(format: ImageByteFormat.png);
+    return a!.buffer.asUint8List();
+  } catch (e) {
+    throw e;
+  }
+}
 
 Widget _generateQRImage (String? textToGenerate) {
   if (textToGenerate != "") {
