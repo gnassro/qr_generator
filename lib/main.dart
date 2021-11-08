@@ -94,7 +94,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
     try {
       final RenderRepaintBoundary boundary =
       _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      final image = await boundary.toImage(pixelRatio: 2.0); // image quality
+      final image = await boundary.toImage(); // image quality
       final byteData = await image.toByteData(format: ImageByteFormat.png);
       pngBytes = byteData!.buffer.asUint8List();
 
