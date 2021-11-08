@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'dart:ui';
-
+import 'dart:typed_data';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 void main() => runApp(const MyApp());
@@ -32,6 +35,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
   // of the TextField.
   final myController = TextEditingController();
   String? inputTextToGenerate;
+  final _globalKey = GlobalKey();
+  Uint8List? pngBytes;
 
   @override
   void initState() {
@@ -76,7 +81,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
           ElevatedButton(
               onPressed: () {
                 setState(() {
-                  toQrImageData(inputTextToGenerate!);
+                  _capturePng();
                 });
               },
               child: const Text("Download")
@@ -85,34 +90,46 @@ class _MyCustomFormState extends State<MyCustomForm> {
       ),
     );
   }
+  Future<void> _capturePng() async {
+    try {
+      final RenderRepaintBoundary boundary =
+      _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final image = await boundary.toImage(pixelRatio: 2.0); // image quality
+      final byteData = await image.toByteData(format: ImageByteFormat.png);
+      pngBytes = byteData!.buffer.asUint8List();
+
+      convertImageToFile(pngBytes!);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<File> convertImageToFile(Uint8List image) async {
+    final file = File('${(await getTemporaryDirectory()).path}/${DateTime.now().millisecondsSinceEpoch}.png');
+    await file.writeAsBytes(image);
+    return file;
+  }
+
+  Widget _generateQRImage (String? textToGenerate) {
+    if (textToGenerate != "") {
+      return RepaintBoundary(
+        key: _globalKey,
+        child: QrImage(
+          data: textToGenerate!,
+          version: QrVersions.auto,
+          semanticsLabel: "Qr",
+          gapless: false,
+          embeddedImage: const AssetImage('assets/images/my_embedded_image.png'),
+          embeddedImageStyle: QrEmbeddedImageStyle(
+            size: const Size(40, 40),
+          ),
+        ),
+      );
+    }
+    return const Text ("");
+  }
+
 }
 
-Future<dynamic> toQrImageData(String text) async {
-  try {
-    final image = await QrPainter(
-      data: text,
-      version: QrVersions.auto,
-      gapless: false,
-    ).toImage(300);
-    final a = await image.toByteData(format: ImageByteFormat.png);
-    return a!.buffer.asUint8List();
-  } catch (e) {
-    throw e;
-  }
-}
 
-Widget _generateQRImage (String? textToGenerate) {
-  if (textToGenerate != "") {
-    return QrImage(
-      data: textToGenerate!,
-      version: QrVersions.auto,
-      semanticsLabel: "Qr",
-      gapless: false,
-      embeddedImage: const AssetImage('assets/images/my_embedded_image.png'),
-      embeddedImageStyle: QrEmbeddedImageStyle(
-        size: const Size(40, 40),
-      ),
-    );
-  }
-  return const Text ("");
-}
+
