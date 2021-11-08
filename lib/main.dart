@@ -87,7 +87,6 @@ class _MyCustomFormState extends State<MyCustomForm> {
   }
 }
 
-
 Future<dynamic> toQrImageData(String text) async {
   try {
     final image = await QrPainter(
