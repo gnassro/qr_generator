@@ -1,9 +1,13 @@
 import 'dart:io';
-import 'dart:ui';
 import 'dart:typed_data';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:qr/qr.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 void main() => runApp(const MyApp());
@@ -75,61 +79,66 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   inputTextToGenerate = myController.text;
                 });
               },
-              child: const Text("Generate")
-          ),
+              child: const Text("Generate")),
           _generateQRImage(inputTextToGenerate),
           ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _capturePng();
+                  _capturePng(inputTextToGenerate);
                 });
               },
-              child: const Text("Download")
-          ),
+              child: const Text("Download")),
         ],
       ),
     );
   }
-  Future<void> _capturePng() async {
-    try {
-      final RenderRepaintBoundary boundary =
-      _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      final image = await boundary.toImage(); // image quality
-      final byteData = await image.toByteData(format: ImageByteFormat.png);
-      pngBytes = byteData!.buffer.asUint8List();
 
-      convertImageToFile(pngBytes!);
+  Future<void> _capturePng(String? textToGenerate) async {
+    try {
+      var permStatus = await Permission.storage.status;
+      if (!permStatus.isGranted) {
+        print("take grant");
+        await Permission.storage.request();
+      } else {
+        print("is granted");
+      }
+
+      ScreenshotController screenshotController = ScreenshotController();
+      screenshotController.captureFromWidget(
+          QrImage(
+            backgroundColor: Colors.white,
+            size: 500,
+            data: textToGenerate!,
+            version: QrVersions.auto,
+            gapless: false,
+          ),
+      ).then((capturedImage) async {
+        if (capturedImage != null) {
+          final directory = await getApplicationDocumentsDirectory();
+          final imagePath = await File('${directory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png').create();
+          await imagePath.writeAsBytes(capturedImage);
+
+          await ImageGallerySaver.saveFile(imagePath.path);
+        }
+        pngBytes = capturedImage;
+
+      });
     } catch (e) {
+      print("EXCEPTION!!!");
       print(e);
     }
   }
 
-  Future<File> convertImageToFile(Uint8List image) async {
-    final file = File('${(await getTemporaryDirectory()).path}/${DateTime.now().millisecondsSinceEpoch}.png');
-    await file.writeAsBytes(image);
-    return file;
-  }
-
-  Widget _generateQRImage (String? textToGenerate) {
+  Widget _generateQRImage(String? textToGenerate) {
     if (textToGenerate != "") {
-      return RepaintBoundary(
-        key: _globalKey,
-        child: QrImage(
-          data: textToGenerate!,
-          version: QrVersions.auto,
-          semanticsLabel: "Qr",
-          gapless: false,
-          embeddedImage: const AssetImage('assets/images/my_embedded_image.png'),
-          embeddedImageStyle: QrEmbeddedImageStyle(
-            size: const Size(40, 40),
-          ),
-        ),
+      return PrettyQr(
+        image: const AssetImage('assets/images/my_embedded_image.png'),
+        size: 200,
+        data: textToGenerate!,
+        errorCorrectLevel: QrErrorCorrectLevel.M,
+        roundEdges: true,
       );
     }
-    return const Text ("");
+    return const Text("");
   }
-
 }
-
-
-
