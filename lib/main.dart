@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qrgenerator/tools/colors.dart';
+
+import 'components/inputcompo.dart';
+import 'components/bodycompo.dart';
 
 void main() => runApp(const MyApp());
 
@@ -34,10 +38,15 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
   String? inputTextToGenerate;
   Uint8List? pngBytes;
 
+  bool? gapState;
+  InputCompo textField = InputCompo();
+  BodyCompo qrBody = BodyCompo();
+
   @override
   void initState() {
     super.initState();
     inputTextToGenerate = "";
+    gapState = false;
   }
 
   @override
@@ -49,43 +58,44 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
 
   @override
   Widget build(BuildContext context) {
+    final Color? _appBackgroundColor = HexColor().appBackgroundColor();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('QR Generate',
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextField(
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  controller: myController,
-                ),
+      backgroundColor: _appBackgroundColor,
+      body: Center(
+          child: ListView(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height * 0.06),
+              textField.builder(
+                controller: myController,
+                onChanged: (text) {
+                  setState(() {
+                    inputTextToGenerate = text;
+                  });
+                }
               ),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    inputTextToGenerate = myController.text;
-                  });
-                },
-                child: const Text("Generate")),
-            _generateQRImage(inputTextToGenerate),
-            ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _capturePng(inputTextToGenerate);
-                  });
-                },
-                child: const Text("Download")),
-          ],
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+              qrBody.switchQR(
+                  status: gapState!,
+                  onToggle: (state) {
+                    setState(() {
+                      gapState = state;
+                    });
+                  }
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+              qrBody.qrBuild(inputTextToGenerate!,gapState!),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _capturePng(inputTextToGenerate);
+                    });
+                  },
+                  child: const Text("Download")),
+            ],
+          ),
         ),
-      ),
     );
   }
 
@@ -115,17 +125,5 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
     }
   }
 
-  Widget _generateQRImage(String? textToGenerate) {
-    if (textToGenerate != "") {
-      return QrImage(
-        constrainErrorBounds: false,
-        backgroundColor: Colors.white,
-        size: 500,
-        data: textToGenerate!,
-        version: QrVersions.auto,
-        gapless: false,
-      );
-    }
-    return const Text("");
-  }
+
 }
