@@ -4,11 +4,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:qr/qr.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qrgenerator/tools/colors.dart';
+
+import 'components/inputcompo.dart';
+import 'components/bodycompo.dart';
 
 void main() => runApp(const MyApp());
 
@@ -19,33 +20,33 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'QR Generator',
-      home: MyCustomForm(),
+      home: QrGenerateApp(),
     );
   }
 }
 
-// Define a custom Form widget.
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({Key? key}) : super(key: key);
+
+class QrGenerateApp extends StatefulWidget {
+  const QrGenerateApp({Key? key}) : super(key: key);
 
   @override
-  _MyCustomFormState createState() => _MyCustomFormState();
+  _QrGenerateAppState createState() => _QrGenerateAppState();
 }
 
-// Define a corresponding State class.
-// This class holds the data related to the Form.
-class _MyCustomFormState extends State<MyCustomForm> {
-  // Create a text controller and use it to retrieve the current value
-  // of the TextField.
+class _QrGenerateAppState extends State<QrGenerateApp> {
   final myController = TextEditingController();
   String? inputTextToGenerate;
-  final _globalKey = GlobalKey();
   Uint8List? pngBytes;
+
+  bool? gapState;
+  InputCompo textField = InputCompo();
+  BodyCompo qrBody = BodyCompo();
 
   @override
   void initState() {
     super.initState();
     inputTextToGenerate = "";
+    gapState = false;
   }
 
   @override
@@ -57,88 +58,72 @@ class _MyCustomFormState extends State<MyCustomForm> {
 
   @override
   Widget build(BuildContext context) {
+    final Color? _appBackgroundColor = HexColor().appBackgroundColor();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('QR code'),
-      ),
-      body: Column(
-        children: [
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
+      backgroundColor: _appBackgroundColor,
+      body: Center(
+          child: ListView(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height * 0.06),
+              textField.builder(
                 controller: myController,
+                onChanged: (text) {
+                  setState(() {
+                    inputTextToGenerate = text;
+                  });
+                }
               ),
-            ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+              qrBody.switchQR(
+                  status: gapState!,
+                  onToggle: (state) {
+                    setState(() {
+                      gapState = state;
+                    });
+                  }
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+              qrBody.qrBuild(inputTextToGenerate!,gapState!),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _capturePng(inputTextToGenerate);
+                    });
+                  },
+                  child: const Text("Download")),
+            ],
           ),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  inputTextToGenerate = myController.text;
-                });
-              },
-              child: const Text("Generate")),
-          _generateQRImage(inputTextToGenerate),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _capturePng(inputTextToGenerate);
-                });
-              },
-              child: const Text("Download")),
-        ],
-      ),
+        ),
     );
   }
 
-  Future<void> _capturePng(String? textToGenerate) async {
+  Future<void> _capturePng(String? textToGenerate, {double imageSize = 100}) async {
     try {
       var permStatus = await Permission.storage.status;
       if (!permStatus.isGranted) {
-        print("take grant");
         await Permission.storage.request();
-      } else {
-        print("is granted");
       }
 
-      ScreenshotController screenshotController = ScreenshotController();
-      screenshotController.captureFromWidget(
-          QrImage(
-            backgroundColor: Colors.white,
-            size: 500,
+      if(!permStatus.isDenied) {
+        final image = await QrPainter(
             data: textToGenerate!,
             version: QrVersions.auto,
-            gapless: false,
-          ),
-      ).then((capturedImage) async {
-        if (capturedImage != null) {
-          final directory = await getApplicationDocumentsDirectory();
-          final imagePath = await File('${directory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png').create();
-          await imagePath.writeAsBytes(capturedImage);
+            gapless: false
+        ).toImageData(imageSize);
 
-          await ImageGallerySaver.saveFile(imagePath.path);
-        }
-        pngBytes = capturedImage;
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = await File('${directory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png').create();
+        await imagePath.writeAsBytes(image!.buffer.asUint8List());
 
-      });
+        await ImageGallerySaver.saveFile(imagePath.path);
+      }
+
     } catch (e) {
-      print("EXCEPTION!!!");
-      print(e);
+      rethrow;
     }
   }
 
-  Widget _generateQRImage(String? textToGenerate) {
-    if (textToGenerate != "") {
-      return PrettyQr(
-        image: const AssetImage('assets/images/my_embedded_image.png'),
-        size: 200,
-        data: textToGenerate!,
-        errorCorrectLevel: QrErrorCorrectLevel.M,
-        roundEdges: true,
-      );
-    }
-    return const Text("");
-  }
+
 }
