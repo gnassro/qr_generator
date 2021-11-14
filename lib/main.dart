@@ -96,7 +96,6 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
           });
         },
         selectedSize: (size) {
-          print(size);
           imageSIze = size;
         }
       ),
