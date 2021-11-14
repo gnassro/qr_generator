@@ -41,6 +41,7 @@ dependencies:
   image_gallery_saver: ^1.7.1
   solid_bottom_sheet: ^0.1.10
   custom_radio_grouped_button: ^2.1.1
+  flutter_colorpicker: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -4,6 +4,7 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:qrgenerator/tools/colors.dart';
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
+//import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class BodyCompo {
   final Color? _buttonColor = HexColor().buttonBackgroundColor();
