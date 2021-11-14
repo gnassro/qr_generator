@@ -8,10 +8,9 @@ class InputCompo {
   final Color? _primaryTextColor = HexColor().primaryTextColor();
   final Color? _primaryTextColorFaded = HexColor().primaryTextColorFaded();
 
-  Widget builder ({required TextEditingController controller, void Function(String)? onChanged}) {
+  Widget builder ({void Function(String)? onChanged}) {
     return IntrinsicWidth(
         child: TextFormField(
-          controller: controller,
           onChanged: (text) {onChanged!(text);},
           decoration:  InputDecoration(
             fillColor: _whiteColor,
