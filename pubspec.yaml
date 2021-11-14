@@ -39,6 +39,7 @@ dependencies:
   qr_flutter: ^4.0.0
   flutter_switch: ^0.3.2
   image_gallery_saver: ^1.7.1
+  solid_bottom_sheet: ^0.1.10
 
 dev_dependencies:
   flutter_test:

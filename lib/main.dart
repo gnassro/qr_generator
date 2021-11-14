@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrgenerator/tools/colors.dart';
+import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 
 import 'components/inputcompo.dart';
 import 'components/bodycompo.dart';
