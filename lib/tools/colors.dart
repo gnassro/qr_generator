@@ -12,21 +12,21 @@ class HexColor {
   }
 
   Color appBackgroundColor() {
-    return getColorFromHex('#F1F7F8');
+    return const Color(0xffF1F7F8);
   }
 
   Color buttonBackgroundColor() {
-    return getColorFromHex('#438DA9');
+    return const Color(0xff438DA9);
   }
 
   Color primaryTextColor() {
-    return getColorFromHex('#05668D');
+    return const Color(0xff05668D);
   }
   Color primaryTextColorFaded() {
-    return getColorFromHex('#BFD9E1');
+    return const Color(0xffBFD9E1);
   }
 
   Color whiteColor() {
-    return getColorFromHex('#ffffff');
+    return const Color(0xffffffff);
   }
 }

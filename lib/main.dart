@@ -8,6 +8,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrgenerator/tools/colors.dart';
 
+
 import 'components/inputcompo.dart';
 import 'components/bodycompo.dart';
 
@@ -34,25 +35,24 @@ class QrGenerateApp extends StatefulWidget {
 }
 
 class _QrGenerateAppState extends State<QrGenerateApp> {
-  final myController = TextEditingController();
   String? inputTextToGenerate;
   Uint8List? pngBytes;
 
   bool? gapState;
   InputCompo textField = InputCompo();
   BodyCompo qrBody = BodyCompo();
+  double? imageSIze;
 
   @override
   void initState() {
     super.initState();
     inputTextToGenerate = "";
     gapState = false;
+    imageSIze = 500.0;
   }
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
     super.dispose();
   }
 
@@ -68,7 +68,6 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.06),
               textField.builder(
-                controller: myController,
                 onChanged: (text) {
                   setState(() {
                     inputTextToGenerate = text;
@@ -86,16 +85,21 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
               qrBody.qrBuild(inputTextToGenerate!,gapState!),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _capturePng(inputTextToGenerate);
-                    });
-                  },
-                  child: const Text("Download")),
             ],
           ),
         ),
+      bottomSheet: BodyCompo().downloadLayout(
+        context: context,
+        pressedDownload: () {
+          setState(() {
+            _capturePng(inputTextToGenerate,imageSize: imageSIze!);
+          });
+        },
+        selectedSize: (size) {
+          print(size);
+          imageSIze = size;
+        }
+      ),
     );
   }
 
