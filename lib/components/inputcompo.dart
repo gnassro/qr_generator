@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
-import '../tools/colors.dart';
+import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 
 
 class InputCompo {
 
-  final Color? _whiteColor = HexColor().whiteColor();
-  final Color? _primaryTextColor = HexColor().primaryTextColor();
-  final Color? _primaryTextColorFaded = HexColor().primaryTextColorFaded();
-
-  Widget builder ({void Function(String)? onChanged}) {
+  Widget builder ({
+    required void Function(String)? onChanged,
+    required void Function()? onTap,
+  }) {
     return IntrinsicWidth(
         child: TextFormField(
+          onTap: () => onTap!(),
           onChanged: (text) {onChanged!(text);},
           decoration:  InputDecoration(
-            fillColor: _whiteColor,
+            fillColor: global_colors.whiteColor!,
             filled: true,
             labelText: 'Text to Generate',
-            labelStyle: TextStyle(
-              color: _primaryTextColor,
+            labelStyle: const TextStyle(
+              color: global_colors.primaryColor,
             ),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                  color: _primaryTextColorFaded!,
+                  color: global_colors.primaryFadedColor!,
                 width: 1
               ),
             ),
             focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                  color: _primaryTextColorFaded!,
+                  color: global_colors.primaryFadedColor!,
                   width: 1.8
               ),
             )
