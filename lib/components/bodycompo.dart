@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:qrgenerator/tools/colors.dart';
+import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
-//import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class BodyCompo {
-  final Color? _buttonColor = HexColor().buttonBackgroundColor();
-  final Color? _layoutBackground = HexColor().appBackgroundColor();
-  final Color? _primary = HexColor().primaryTextColor();
-
 
   Widget switchQR ({required bool status, void Function(bool)? onToggle}) {
 
     return FlutterSwitch(
-      activeColor: _buttonColor!,
+      activeColor: global_colors.elementBackgroundColor!,
       width: 125.0,
       height: 55.0,
       valueFontSize: 15.0,
@@ -34,6 +30,7 @@ class BodyCompo {
 
   Widget qrBuild(String? textToGenerate, bool gapless) {
     if (textToGenerate != "") {
+      // TODO: Changed to images
       return Center(
         child: QrImage(
           backgroundColor: Colors.white,
@@ -60,7 +57,7 @@ class BodyCompo {
     return SolidBottomSheet(
       toggleVisibilityOnTap: true,
         headerBar: Container(
-          color: _buttonColor,
+          color: global_colors.elementBackgroundColor!,
           height: 50,
           child: const Center(
             child: Text(
@@ -81,9 +78,9 @@ class BodyCompo {
                 spacing: 2.0,
                 enableButtonWrap: true,
                 absoluteZeroSpacing: false,
-                selectedBorderColor: _primary,
-                unSelectedBorderColor: _primary,
-                unSelectedColor: _layoutBackground!,
+                selectedBorderColor: global_colors.primaryColor!,
+                unSelectedBorderColor: global_colors.primaryColor!,
+                unSelectedColor: global_colors.appBackgroundColor!,
                 buttonLables: const ['100x','500x','1000x'],
                 buttonValues: const ['100','500','1000'],
                 defaultSelected: '500',
@@ -94,20 +91,20 @@ class BodyCompo {
                 radioButtonValue: (value) {
                   selectedSize!(double.parse(value.toString()));
                 },
-                selectedColor: _buttonColor!,
+                selectedColor: global_colors.elementBackgroundColor!,
               ),
               const SizedBox(
                 height: 20.0,
               ),
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: _primary,
+                    primary: global_colors.primaryColor!,
                     padding: const EdgeInsets.all(35.0),
                     minimumSize: Size(MediaQuery.of(context).size.width * 0.6,MediaQuery.of(context).size.width * 0.6),
                     shape: const CircleBorder(),
                     side: BorderSide(
                         width: 6.0,
-                      color: _buttonColor!
+                      color: global_colors.elementBackgroundColor!
                     ),
                   ),
                   onPressed: () {
@@ -135,7 +132,7 @@ class BodyCompo {
   void _showSnackBar ({required BuildContext context, String? message}) {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.black87,
+          backgroundColor: global_colors.blackColor,
           content: GestureDetector(
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,

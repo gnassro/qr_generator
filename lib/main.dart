@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:qrgenerator/tools/colors.dart';
+import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 
 
 import 'components/inputcompo.dart';
@@ -58,10 +58,9 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
 
   @override
   Widget build(BuildContext context) {
-    final Color? _appBackgroundColor = HexColor().appBackgroundColor();
 
     return Scaffold(
-      backgroundColor: _appBackgroundColor,
+      backgroundColor: global_colors.appBackgroundColor,
       body: Center(
           child: ListView(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -92,7 +91,10 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
         context: context,
         pressedDownload: () {
           setState(() {
-            _capturePng(inputTextToGenerate,imageSize: imageSIze!);
+            _capturePng(
+                textToGenerate: inputTextToGenerate,
+                imageSize: imageSIze!
+            );
           });
         },
         selectedSize: (size) {
@@ -102,7 +104,12 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
     );
   }
 
-  Future<void> _capturePng(String? textToGenerate, {double imageSize = 100}) async {
+  Future<void> _capturePng({
+    required String? textToGenerate,
+    Color? qrColor = Colors.black,
+    Color? backgroundColor = Colors.white,
+    double? imageSize = 100
+  }) async {
     try {
       var permStatus = await Permission.storage.status;
       if (!permStatus.isGranted) {
@@ -111,10 +118,12 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
 
       if(!permStatus.isDenied) {
         final image = await QrPainter(
+          color: qrColor!,
+            emptyColor: backgroundColor!,
             data: textToGenerate!,
             version: QrVersions.auto,
             gapless: false
-        ).toImageData(imageSize);
+        ).toImageData(imageSize!);
 
         final directory = await getApplicationDocumentsDirectory();
         final imagePath = await File('${directory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png').create();
