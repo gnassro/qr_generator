@@ -30,7 +30,6 @@ class BodyCompo {
 
   Widget qrBuild(String? textToGenerate, bool gapless) {
     if (textToGenerate != "") {
-      // TODO: Changed to images
       return Center(
         child: QrImage(
           backgroundColor: Colors.white,
@@ -42,12 +41,10 @@ class BodyCompo {
       );
     } else {
       return Center(
-        child: QrImage(
-          backgroundColor: Colors.white,
-          size: 300,
-          data: "testQR",
-          version: QrVersions.auto,
-          gapless: !gapless,
+        child: Image.asset(
+          'assets/images/emptyQr.png',
+          width: 300,
+          height: 300,
         ),
       );
     }
@@ -177,10 +174,6 @@ class BodyCompo {
                   ),
                   onPressed: () {
                     pressedDownload!(qrColor,backgroundQrColor);
-                    _showSnackBar(
-                        context: context,
-                      message: "The image is saved in the Gallery"
-                    );
                   },
                   child: Column(
                     children: const [
@@ -197,10 +190,14 @@ class BodyCompo {
     );
   }
 
-  void _showSnackBar ({required BuildContext context, String? message}) {
+  void showSnackBar ({
+    required BuildContext context,
+    String? message,
+    Color? backgroundColor = global_colors.blackColor
+  }) {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: global_colors.blackColor,
+          backgroundColor: backgroundColor,
           content: GestureDetector(
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
