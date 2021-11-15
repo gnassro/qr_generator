@@ -4,9 +4,13 @@ import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 
 class InputCompo {
 
-  Widget builder ({void Function(String)? onChanged}) {
+  Widget builder ({
+    required void Function(String)? onChanged,
+    required void Function()? onTap,
+  }) {
     return IntrinsicWidth(
         child: TextFormField(
+          onTap: () => onTap!(),
           onChanged: (text) {onChanged!(text);},
           decoration:  InputDecoration(
             fillColor: global_colors.whiteColor!,

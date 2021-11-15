@@ -4,7 +4,7 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:qrgenerator/tools/color_picker.dart';
 
 class BodyCompo {
 
@@ -53,17 +53,39 @@ class BodyCompo {
     }
   }
 
-  Widget downloadLayout({required BuildContext context, required void Function()? pressedDownload, void Function(double)? selectedSize}) {
+  Widget downloadLayout({
+    required BuildContext context,
+    required void Function(Color?,Color?)? pressedDownload,
+    SolidController? controller,
+    void Function(double)? selectedSize,
+    Color? defaultQrColor = global_colors.blackColor,
+    Color? defaultBackgroundQrColor = global_colors.whiteColor
+  }) {
+    Color? qrColor = defaultQrColor;
+    Color? backgroundQrColor = defaultBackgroundQrColor;
     return SolidBottomSheet(
+      controller: controller!,
+      draggableBody: true,
       toggleVisibilityOnTap: true,
-        headerBar: Container(
-          color: global_colors.elementBackgroundColor!,
-          height: 50,
-          child: const Center(
-            child: Text(
-                "Download",
-              style: TextStyle(
-                color: Colors.white
+        headerBar: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            if(controller.isOpened) {
+              controller.hide();
+            } else {
+              controller.show();
+            }
+
+          },
+          child: Container(
+            color: global_colors.elementBackgroundColor!,
+            height: 50,
+            child: const Center(
+              child: Text(
+                  "Download",
+                style: TextStyle(
+                  color: Colors.white
+                ),
               ),
             ),
           ),
@@ -72,6 +94,52 @@ class BodyCompo {
           child: ListView(
             shrinkWrap: true,
             children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: FractionallySizedBox(
+                      widthFactor: 0.9,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(global_colors.elementBackgroundColor),
+                          foregroundColor: MaterialStateProperty.all(global_colors.whiteColor)
+                        ),
+                          onPressed: () {
+                            ColorQrPicker().showColorPicker(
+                                context: context,
+                                pickedColor: qrColor,
+                                onColorChanged: (color) {
+                                  qrColor = color;
+                                }
+                            );
+                          },
+                          child: const Text('QR Color')
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: FractionallySizedBox(
+                      widthFactor: 0.9,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(global_colors.elementBackgroundColor),
+                            foregroundColor: MaterialStateProperty.all(global_colors.whiteColor)
+                        ),
+                          onPressed: () {
+                            ColorQrPicker().showColorPicker(
+                                context: context,
+                                pickedColor: backgroundQrColor,
+                                onColorChanged: (color) {
+                                  backgroundQrColor = color;
+                                }
+                            );
+                          },
+                          child: const Text('Background Color')
+                      ),
+                    ),
+                  )
+                ],
+              ),
               CustomRadioButton(
                 enableShape: true,
                 elevation: 0,
@@ -108,10 +176,10 @@ class BodyCompo {
                     ),
                   ),
                   onPressed: () {
-                    pressedDownload!();
+                    pressedDownload!(qrColor,backgroundQrColor);
                     _showSnackBar(
                         context: context,
-                      message: "taped"
+                      message: "The image is saved in the Gallery"
                     );
                   },
                   child: Column(
