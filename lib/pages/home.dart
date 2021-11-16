@@ -85,13 +85,26 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
           defaultBackgroundQrColor: backgroundQrColor!,
           controller: bottomSheetController!,
           pressedDownload: (newQrColor, newBackgroundColor) {
-            _capturePng(
-                textToGenerate: inputTextToGenerate,
-                imageSize: imageSIze!,
-                backgroundColor: newBackgroundColor,
-                qrColor: newQrColor,
-                qrGap: gapState
-            );
+            if (inputTextToGenerate == "") {
+              qrBody.showSnackBar(
+                  context: context,
+                message: "You must at least tap one character to generate",
+                backgroundColor: global_colors.alertColor
+              );
+            } else {
+              _capturePng(
+                  textToGenerate: inputTextToGenerate,
+                  imageSize: imageSIze!,
+                  backgroundColor: newBackgroundColor,
+                  qrColor: newQrColor,
+                  qrGap: gapState
+              );
+              qrBody.showSnackBar(
+                  context: context,
+                  message: "The image is saved in the Gallery"
+              );
+            }
+
           },
           selectedSize: (size) {
             imageSIze = size;
