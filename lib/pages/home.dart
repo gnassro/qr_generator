@@ -132,7 +132,7 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
             emptyColor: backgroundColor!,
             data: textToGenerate!,
             version: QrVersions.auto,
-            gapless: qrGap!
+            gapless: !qrGap!
         ).toImageData(imageSize!);
 
         final directory = await getApplicationDocumentsDirectory();
