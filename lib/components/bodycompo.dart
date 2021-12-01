@@ -57,7 +57,7 @@ class BodyCompo {
       toggleVisibilityOnTap: true,
       headerBar: GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus();
+          //FocusScope.of(context).unfocus();
           if (controller.isOpened) {
             controller.hide();
           } else {
