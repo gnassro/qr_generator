@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qrgenerator/pages/home.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,9 +25,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'QR Generator',
-      home: QrGenerateApp(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'QR Generator',
+        home: KeyboardDismissOnTap(
+          child: QrGenerateApp(),
+        ));
   }
 }
