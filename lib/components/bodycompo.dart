@@ -56,7 +56,14 @@ class BodyCompo {
       draggableBody: true,
       toggleVisibilityOnTap: true,
       headerBar: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          if (controller.isOpened) {
+            controller.hide();
+          } else {
+            controller.show();
+          }
+        },
         child: Container(
           color: global_colors.elementBackgroundColor!,
           height: 50,
