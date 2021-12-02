@@ -5,8 +5,10 @@ import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:qrgenerator/tools/color_picker.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class BodyCompo {
+
   Widget switchQR({required bool status, void Function(bool)? onToggle}) {
     return FlutterSwitch(
       activeColor: global_colors.elementBackgroundColor!,
@@ -53,16 +55,16 @@ class BodyCompo {
     Color? backgroundQrColor = defaultBackgroundQrColor;
     return SolidBottomSheet(
       controller: controller!,
-      draggableBody: true,
-      toggleVisibilityOnTap: true,
       headerBar: GestureDetector(
         onTap: () {
-          //FocusScope.of(context).unfocus();
-          if (controller.isOpened) {
-            controller.hide();
-          } else {
-            controller.show();
-          }
+          Future.delayed(const Duration(microseconds: 100), () {
+            if (controller.isOpened) {
+              controller.hide();
+            } else {
+              controller.show();
+            }
+          });
+
         },
         child: Container(
           color: global_colors.elementBackgroundColor!,
