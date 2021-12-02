@@ -5,7 +5,6 @@ import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:qrgenerator/tools/color_picker.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class BodyCompo {
 
@@ -57,13 +56,24 @@ class BodyCompo {
       controller: controller!,
       headerBar: GestureDetector(
         onTap: () {
-          Future.delayed(const Duration(microseconds: 100), () {
+          final currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus && currentFocus.hasFocus) {
+            FocusManager.instance.primaryFocus?.unfocus();
+            Future.delayed(const Duration(milliseconds: 700), () {
+              if (controller.isOpened) {
+                controller.hide();
+              } else {
+                controller.show();
+              }
+            });
+          } else {
             if (controller.isOpened) {
               controller.hide();
             } else {
               controller.show();
             }
-          });
+          }
+
 
         },
         child: Container(
