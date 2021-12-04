@@ -1,10 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gnassro.qrgenerator">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
        android:requestLegacyExternalStorage="true"
         android:label="qrgenerator"
         android:icon="@mipmap/ic_launcher">
+       <meta-data
+           android:name="com.google.android.gms.ads.APPLICATION_ID"
+           android:value="@string/APPLICATION_ADMOB_ID"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

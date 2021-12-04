@@ -8,9 +8,11 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:qrgenerator/components/inputcompo.dart';
 import 'package:qrgenerator/components/bodycompo.dart';
+import '../library/ad_helper.dart';
 
 class QrGenerateApp extends StatefulWidget {
   const QrGenerateApp({Key? key}) : super(key: key);
@@ -29,7 +31,73 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
   double? imageSIze;
   Color? qrColor = global_colors.blackColor;
   Color? backgroundQrColor = global_colors.whiteColor;
+  Color? qrColorToDownload = global_colors.blackColor;
+  Color? backgroundQrColorToDownload = global_colors.whiteColor;
+
   SolidController? bottomSheetController;
+
+
+  late RewardedAd? _rewardedAd;
+  bool _isRewardedAdReady = false;
+  bool _isUserRewarded = false;
+  Future<InitializationStatus> _initGoogleMobileAds() {
+    return MobileAds.instance.initialize();
+  }
+
+  void _loadRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdHelper.rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          _rewardedAd = ad;
+
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              setState(() {
+                _isRewardedAdReady = false;
+              });
+              _loadRewardedAd();
+              if(_isUserRewarded) {
+                _capturePng(
+                    textToGenerate: inputTextToGenerate,
+                    imageSize: imageSIze!,
+                    backgroundColor: backgroundQrColor,
+                    qrColor: qrColorToDownload,
+                    qrGap: gapState
+                );
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "The image is saved in the Gallery"
+                );
+                setState(() {
+                  _isUserRewarded = false;
+                });
+              } else {
+                setState(() {
+                  _isUserRewarded = false;
+                });
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "You See the full video ads to download the QR Code",
+                    backgroundColor: global_colors.alertColor
+                );
+              }
+            },
+          );
+
+          setState(() {
+            _isRewardedAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          setState(() {
+            _isRewardedAdReady = false;
+          });
+        },
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -38,10 +106,13 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
     gapState = false;
     imageSIze = 500.0;
     bottomSheetController = SolidController();
+    _initGoogleMobileAds();
+    _loadRewardedAd();
   }
 
   @override
   void dispose() {
+    _rewardedAd?.dispose();
     super.dispose();
   }
 
@@ -85,6 +156,10 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
           defaultBackgroundQrColor: backgroundQrColor!,
           controller: bottomSheetController!,
           pressedDownload: (newQrColor, newBackgroundColor) {
+            setState(() {
+              backgroundQrColorToDownload = newBackgroundColor;
+              qrColorToDownload = newQrColor;
+            });
             if (inputTextToGenerate == "") {
               qrBody.showSnackBar(
                   context: context,
@@ -92,17 +167,25 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
                 backgroundColor: global_colors.alertColor
               );
             } else {
-              _capturePng(
-                  textToGenerate: inputTextToGenerate,
-                  imageSize: imageSIze!,
-                  backgroundColor: newBackgroundColor,
-                  qrColor: newQrColor,
-                  qrGap: gapState
-              );
-              qrBody.showSnackBar(
-                  context: context,
-                  message: "The image is saved in the Gallery"
-              );
+              if (_isRewardedAdReady) {
+                _rewardedAd?.show(
+                    onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
+                      setState(() {
+                        _isUserRewarded = true;
+                      });
+                    });
+              } else {
+                setState(() {
+                  _isUserRewarded = false;
+                });
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "Please enable the internet connection to support us by showing video Ads",
+                    backgroundColor: global_colors.alertColor
+                );
+                _loadRewardedAd();
+              }
+
             }
 
           },
