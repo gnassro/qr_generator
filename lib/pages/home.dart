@@ -31,11 +31,15 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
   double? imageSIze;
   Color? qrColor = global_colors.blackColor;
   Color? backgroundQrColor = global_colors.whiteColor;
+  Color? qrColorToDownload = global_colors.blackColor;
+  Color? backgroundQrColorToDownload = global_colors.whiteColor;
+
   SolidController? bottomSheetController;
 
 
   late RewardedAd? _rewardedAd;
   bool _isRewardedAdReady = false;
+  bool _isUserRewarded = false;
   Future<InitializationStatus> _initGoogleMobileAds() {
     return MobileAds.instance.initialize();
   }
@@ -54,6 +58,31 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
                 _isRewardedAdReady = false;
               });
               _loadRewardedAd();
+              if(_isUserRewarded) {
+                _capturePng(
+                    textToGenerate: inputTextToGenerate,
+                    imageSize: imageSIze!,
+                    backgroundColor: backgroundQrColor,
+                    qrColor: qrColorToDownload,
+                    qrGap: gapState
+                );
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "The image is saved in the Gallery"
+                );
+                setState(() {
+                  _isUserRewarded = false;
+                });
+              } else {
+                setState(() {
+                  _isUserRewarded = false;
+                });
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "You See the full video ads to download the QR Code",
+                    backgroundColor: global_colors.alertColor
+                );
+              }
             },
           );
 
@@ -62,7 +91,6 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
           });
         },
         onAdFailedToLoad: (err) {
-          print('Failed to load a rewarded ad: ${err.message}');
           setState(() {
             _isRewardedAdReady = false;
           });
@@ -78,6 +106,8 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
     gapState = false;
     imageSIze = 500.0;
     bottomSheetController = SolidController();
+    _initGoogleMobileAds();
+    _loadRewardedAd();
   }
 
   @override
@@ -126,29 +156,36 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
           defaultBackgroundQrColor: backgroundQrColor!,
           controller: bottomSheetController!,
           pressedDownload: (newQrColor, newBackgroundColor) {
+            setState(() {
+              backgroundQrColorToDownload = newBackgroundColor;
+              qrColorToDownload = newQrColor;
+            });
             if (inputTextToGenerate == "") {
               qrBody.showSnackBar(
                   context: context,
                 message: "You must at least tap one character to generate",
                 backgroundColor: global_colors.alertColor
               );
-              _rewardedAd?.show(
-                  onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
-                    print(ad);
-                    print(reward);
-                  });
             } else {
-              _capturePng(
-                  textToGenerate: inputTextToGenerate,
-                  imageSize: imageSIze!,
-                  backgroundColor: newBackgroundColor,
-                  qrColor: newQrColor,
-                  qrGap: gapState
-              );
-              qrBody.showSnackBar(
-                  context: context,
-                  message: "The image is saved in the Gallery"
-              );
+              if (_isRewardedAdReady) {
+                _rewardedAd?.show(
+                    onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
+                      setState(() {
+                        _isUserRewarded = true;
+                      });
+                    });
+              } else {
+                setState(() {
+                  _isUserRewarded = false;
+                });
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "Please enable the internet connection to support us by showing video Ads",
+                    backgroundColor: global_colors.alertColor
+                );
+                _loadRewardedAd();
+              }
+
             }
 
           },
