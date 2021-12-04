@@ -229,6 +229,4 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
       rethrow;
     }
   }
-
-
 }
