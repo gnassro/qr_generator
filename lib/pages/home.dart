@@ -8,9 +8,11 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:qrgenerator/components/inputcompo.dart';
 import 'package:qrgenerator/components/bodycompo.dart';
+import '../library/ad_helper.dart';
 
 class QrGenerateApp extends StatefulWidget {
   const QrGenerateApp({Key? key}) : super(key: key);
@@ -31,6 +33,44 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
   Color? backgroundQrColor = global_colors.whiteColor;
   SolidController? bottomSheetController;
 
+
+  late RewardedAd? _rewardedAd;
+  bool _isRewardedAdReady = false;
+  Future<InitializationStatus> _initGoogleMobileAds() {
+    return MobileAds.instance.initialize();
+  }
+
+  void _loadRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdHelper.rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          _rewardedAd = ad;
+
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              setState(() {
+                _isRewardedAdReady = false;
+              });
+              _loadRewardedAd();
+            },
+          );
+
+          setState(() {
+            _isRewardedAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load a rewarded ad: ${err.message}');
+          setState(() {
+            _isRewardedAdReady = false;
+          });
+        },
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +82,7 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
 
   @override
   void dispose() {
+    _rewardedAd?.dispose();
     super.dispose();
   }
 
@@ -91,6 +132,11 @@ class _QrGenerateAppState extends State<QrGenerateApp> {
                 message: "You must at least tap one character to generate",
                 backgroundColor: global_colors.alertColor
               );
+              _rewardedAd?.show(
+                  onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
+                    print(ad);
+                    print(reward);
+                  });
             } else {
               _capturePng(
                   textToGenerate: inputTextToGenerate,
