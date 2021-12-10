@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:qrgenerator/tools/color_picker.dart';
 
 
 class DownloadComponent extends StatefulWidget {
-  const DownloadComponent({Key? key}) : super(key: key);
+  const DownloadComponent({
+    Key? key,
+    this.qrColor,
+    this.backgroundQrColor
+  }) : super(key: key);
 
+  final Color? qrColor;
+  final Color? backgroundQrColor;
   @override
   _QrDownloadAppState createState() => _QrDownloadAppState();
 }
 
 class _QrDownloadAppState extends State<DownloadComponent> {
   String? inputTextToGenerate;
+  Color? qrColor,backgroundQrColor;
+
+  @override
+  void initState() {
+    super.initState();
+    qrColor = widget.qrColor;
+    backgroundQrColor = widget.backgroundQrColor;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +46,9 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                             context: context,
                             pickedColor: qrColor,
                             onColorChanged: (color) {
-                              qrColor = color;
+                              setState(() {
+                                qrColor = color;
+                              });
                             });
                       },
                       child: const Text('QR Color')),
@@ -49,7 +64,9 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                             context: context,
                             pickedColor: backgroundQrColor,
                             onColorChanged: (color) {
-                              backgroundQrColor = color;
+                              setState(() {
+                                backgroundQrColor = color;
+                              });
                             });
                       },
                       child: const Text('Background Color')),
