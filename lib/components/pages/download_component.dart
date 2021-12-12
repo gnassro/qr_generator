@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,7 +7,10 @@ import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:qrgenerator/tools/color_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../widgets/body_components.dart';
+import '../../config/monetize/ad_helper.dart';
 
 class DownloadComponent extends StatefulWidget {
   const DownloadComponent({
@@ -31,13 +33,27 @@ class _QrDownloadAppState extends State<DownloadComponent> {
 
   Color? qrColor,backgroundQrColor;
   double? imageSize;
+  BodyCompo qrBody = BodyCompo();
+
+  late RewardedAd? _rewardedAd;
+  bool? _isRewardedAdReady, _isUserRewarded;
+  Future<InitializationStatus> _initGoogleMobileAds() {
+    return MobileAds.instance.initialize();
+  }
 
   @override
   void initState() {
     super.initState();
+
     qrColor = widget.qrColor;
     backgroundQrColor = widget.backgroundQrColor;
     imageSize = 500.0;
+
+    _isRewardedAdReady = false;
+    _isUserRewarded = false;
+
+    _initGoogleMobileAds();
+    _loadRewardedAd();
   }
 
   @override
@@ -126,13 +142,33 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                 side: BorderSide(width: 6.0, color: global_colors.elementBackgroundColor!),
               ),
               onPressed: () {
-                _capturePng(
-                    textToGenerate: widget.inputTextToGenerate,
-                  qrColor: qrColor,
-                  backgroundColor: backgroundQrColor,
-                  imageSize: imageSize,
-                  qrGap: widget.qrGap
-                );
+                if (widget.inputTextToGenerate == "") {
+                  qrBody.showSnackBar(
+                      context: context,
+                      message: "You must at least tap one character to generate",
+                      backgroundColor: global_colors.alertColor
+                  );
+                } else {
+                  if (_isRewardedAdReady!) {
+                    _rewardedAd?.show(
+                        onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
+                          setState(() {
+                            _isUserRewarded = true;
+                          });
+                        });
+                  } else {
+                    setState(() {
+                      _isUserRewarded = false;
+                    });
+                    qrBody.showSnackBar(
+                        context: context,
+                        message: "Please enable the internet connection to support us by showing video Ads",
+                        backgroundColor: global_colors.alertColor
+                    );
+                    _loadRewardedAd();
+                  }
+
+                }
               },
               child: Column(
                 children: const [
@@ -143,6 +179,61 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                 ],
               )),
         ],
+      ),
+    );
+  }
+
+  void _loadRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdHelper.rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          _rewardedAd = ad;
+
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              setState(() {
+                _isRewardedAdReady = false;
+              });
+              _loadRewardedAd();
+              if(_isUserRewarded!) {
+                _capturePng(
+                    textToGenerate: widget.inputTextToGenerate,
+                    qrColor: qrColor,
+                    backgroundColor: backgroundQrColor,
+                    imageSize: imageSize,
+                    qrGap: widget.qrGap
+                );
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "The image is saved in the Gallery"
+                );
+                setState(() {
+                  _isUserRewarded = false;
+                });
+              } else {
+                setState(() {
+                  _isUserRewarded = false;
+                });
+                qrBody.showSnackBar(
+                    context: context,
+                    message: "You See the full video ads to download the QR Code",
+                    backgroundColor: global_colors.alertColor
+                );
+              }
+            },
+          );
+
+          setState(() {
+            _isRewardedAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          setState(() {
+            _isRewardedAdReady = false;
+          });
+        },
       ),
     );
   }
