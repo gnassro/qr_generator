@@ -13,25 +13,31 @@ import 'package:qr_flutter/qr_flutter.dart';
 class DownloadComponent extends StatefulWidget {
   const DownloadComponent({
     Key? key,
+    this.inputTextToGenerate,
     this.qrColor,
-    this.backgroundQrColor
+    this.backgroundQrColor,
+    this.qrGap
   }) : super(key: key);
 
   final Color? qrColor;
   final Color? backgroundQrColor;
+  final String? inputTextToGenerate;
+  final bool? qrGap;
   @override
   _QrDownloadAppState createState() => _QrDownloadAppState();
 }
 
 class _QrDownloadAppState extends State<DownloadComponent> {
-  String? inputTextToGenerate;
+
   Color? qrColor,backgroundQrColor;
+  double? imageSize;
 
   @override
   void initState() {
     super.initState();
     qrColor = widget.qrColor;
     backgroundQrColor = widget.backgroundQrColor;
+    imageSize = 500.0;
   }
 
   @override
@@ -102,7 +108,9 @@ class _QrDownloadAppState extends State<DownloadComponent> {
             defaultSelected: '500',
             buttonTextStyle: const ButtonTextStyle(selectedColor: Colors.white, unSelectedColor: Colors.black, textStyle: TextStyle(fontSize: 16)),
             radioButtonValue: (value) {
-              selectedSize!(double.parse(value.toString()));
+              setState(() {
+                imageSize = double.parse(value.toString());
+              });
             },
             selectedColor: global_colors.elementBackgroundColor!,
           ),
@@ -118,7 +126,13 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                 side: BorderSide(width: 6.0, color: global_colors.elementBackgroundColor!),
               ),
               onPressed: () {
-                pressedDownload!(qrColor, backgroundQrColor);
+                _capturePng(
+                    textToGenerate: widget.inputTextToGenerate,
+                  qrColor: qrColor,
+                  backgroundColor: backgroundQrColor,
+                  imageSize: imageSize,
+                  qrGap: widget.qrGap
+                );
               },
               child: Column(
                 children: const [
