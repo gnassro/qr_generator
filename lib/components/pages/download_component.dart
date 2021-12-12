@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:qrgenerator/tools/color_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 
 class DownloadComponent extends StatefulWidget {
@@ -125,5 +131,39 @@ class _QrDownloadAppState extends State<DownloadComponent> {
         ],
       ),
     );
+  }
+
+  Future<void> _capturePng({
+    required String? textToGenerate,
+    Color? qrColor = Colors.black,
+    Color? backgroundColor = Colors.white,
+    double? imageSize = 100,
+    bool? qrGap = false,
+  }) async {
+    try {
+      var permStatus = await Permission.storage.status;
+      if (!permStatus.isGranted) {
+        await Permission.storage.request();
+      }
+
+      if(!permStatus.isDenied) {
+        final image = await QrPainter(
+            color: qrColor!,
+            emptyColor: backgroundColor!,
+            data: textToGenerate!,
+            version: QrVersions.auto,
+            gapless: !qrGap!
+        ).toImageData(imageSize!);
+
+        final directory = await getApplicationDocumentsDirectory();
+        final imagePath = await File('${directory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png').create();
+        await imagePath.writeAsBytes(image!.buffer.asUint8List());
+
+        await ImageGallerySaver.saveFile(imagePath.path);
+      }
+
+    } catch (e) {
+      rethrow;
+    }
   }
 }
