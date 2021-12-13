@@ -68,6 +68,12 @@ class _QrGenerateAppState extends State<HomeComponent> {
           ],
         ),
       ),
+      bottomNavigationBar: ElevatedButton(
+        child: const Text("Download"),
+        onPressed: () {
+
+        },
+      ),
     );
   }
 }
