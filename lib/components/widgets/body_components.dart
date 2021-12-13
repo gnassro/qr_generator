@@ -1,12 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:qrgenerator/library/global_colors.dart' as global_colors;
-import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
-import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
-import 'package:qrgenerator/tools/color_picker.dart';
+import '../../libraries/global_colors.dart' as global_colors;
 
 class BodyCompo {
+
+  Widget inputBuilder ({
+    required void Function(String)? onChanged,
+  }) {
+    return IntrinsicWidth(
+        child: TextFormField(
+          onChanged: (text) {onChanged!(text);},
+          decoration:  InputDecoration(
+              fillColor: global_colors.whiteColor!,
+              filled: true,
+              labelText: 'Text to Generate',
+              labelStyle: const TextStyle(
+                color: global_colors.primaryColor,
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                    color: global_colors.primaryFadedColor!,
+                    width: 1
+                ),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(
+                    color: global_colors.primaryFadedColor!,
+                    width: 1.8
+                ),
+              )
+          ),
+        )
+    );
+  }
 
   Widget switchQR({required bool status, void Function(bool)? onToggle}) {
     return FlutterSwitch(

@@ -1,16 +1,17 @@
+import 'package:fluro/fluro.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:qrgenerator/library/global_colors.dart' as global_colors;
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
-import 'package:qrgenerator/tools/color_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../widgets/body_components.dart';
 import '../../config/monetize/ad_helper.dart';
+import '../../libraries/global_colors.dart' as global_colors;
+import '../widgets/color_picker.dart';
 
 class DownloadComponent extends StatefulWidget {
   const DownloadComponent({
@@ -56,6 +57,11 @@ class _QrDownloadAppState extends State<DownloadComponent> {
     _loadRewardedAd();
   }
 
+  @override
+  void dispose() {
+    _rewardedAd?.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Center(
