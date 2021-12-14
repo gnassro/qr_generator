@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:typed_data';
 import '../../libraries/global_colors.dart' as global_colors;
 import 'package:fluro/fluro.dart';
@@ -71,6 +72,15 @@ class _QrGenerateAppState extends State<HomeComponent> {
         ),
       ),
       bottomNavigationBar: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.only(
+            top: 20.0,
+            bottom: 20.0
+          ),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0)),
+        ),
         child: const Text("Download"),
         onPressed: () {
           Application.router.navigateTo(
@@ -78,7 +88,9 @@ class _QrGenerateAppState extends State<HomeComponent> {
             "download?inputTextToGenerate=" + inputTextToGenerate! +
                 "&qrColorToDownload=" + qrColorToDownload!.value.toString() +
                 "&backgroundQrColor=" + backgroundQrColorToDownload!.value.toString() +
-              "&gapState=" + gapState.toString()
+              "&gapState=" + gapState.toString(),
+            transition: TransitionType.inFromBottom,
+            transitionDuration: const Duration(milliseconds: 600)
           ).then((result) {
             setState(() {
               print(result);
