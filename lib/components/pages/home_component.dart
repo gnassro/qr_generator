@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import '../../libraries/global_colors.dart' as global_colors;
+import 'package:fluro/fluro.dart';
 
+import '../../config/routes/application.dart';
 import '../widgets/body_components.dart';
 
 class HomeComponent extends StatefulWidget {
@@ -71,7 +73,10 @@ class _QrGenerateAppState extends State<HomeComponent> {
       bottomNavigationBar: ElevatedButton(
         child: const Text("Download"),
         onPressed: () {
-
+          Application.router.navigateTo(
+            context,
+            "download?backgroundQrColor=someText"
+          );
         },
       ),
     );
