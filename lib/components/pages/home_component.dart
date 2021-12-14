@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'dart:typed_data';
 import '../../libraries/global_colors.dart' as global_colors;
 import 'package:fluro/fluro.dart';
@@ -93,7 +92,6 @@ class _QrGenerateAppState extends State<HomeComponent> {
             transitionDuration: const Duration(milliseconds: 600)
           ).then((result) {
             setState(() {
-              print(result);
               if (result != null) {
                 inputTextToGenerate = result["inputTextToGenerate"];
                 qrColorToDownload = result["qrColor"];
