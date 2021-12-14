@@ -64,8 +64,40 @@ class _QrDownloadAppState extends State<DownloadComponent> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return WillPopScope(
+        onWillPop: () async {
+          FluroRouter.appRouter.pop(
+              context,
+              {
+                "inputTextToGenerate" : widget.inputTextToGenerate,
+                "qrColor" : qrColor,
+                "backgroundQrColor" : backgroundQrColor,
+                "qrGap" : widget.qrGap
+              }
+          );
+
+          return Future.value(false);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Download"),
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                FluroRouter.appRouter.pop(
+                    context,
+                    {
+                      "inputTextToGenerate" : widget.inputTextToGenerate,
+                      "qrColor" : qrColor,
+                      "backgroundQrColor" : backgroundQrColor,
+                      "qrGap" : widget.qrGap
+                    }
+                );
+              },
+            ),
+          ),
+          body: Center(
         child: ListView(
           shrinkWrap: true,
           children: [
@@ -188,6 +220,7 @@ class _QrDownloadAppState extends State<DownloadComponent> {
           ],
         ),
       ),
+    )
     );
   }
 

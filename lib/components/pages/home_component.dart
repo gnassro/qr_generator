@@ -75,8 +75,21 @@ class _QrGenerateAppState extends State<HomeComponent> {
         onPressed: () {
           Application.router.navigateTo(
             context,
-            "download?backgroundQrColor=someText"
-          );
+            "download?inputTextToGenerate=" + inputTextToGenerate! +
+                "&qrColorToDownload=" + qrColorToDownload!.value.toString() +
+                "&backgroundQrColor=" + backgroundQrColorToDownload!.value.toString() +
+              "&gapState=" + gapState.toString()
+          ).then((result) {
+            setState(() {
+              print(result);
+              if (result != null) {
+                inputTextToGenerate = result["inputTextToGenerate"];
+                qrColorToDownload = result["qrColor"];
+                backgroundQrColorToDownload = result["backgroundQrColor"];
+                gapState = result["qrGap"];
+              }
+            });
+          });
         },
       ),
     );

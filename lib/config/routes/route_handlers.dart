@@ -17,10 +17,14 @@ var rootHandler = Handler(
 
 var downloadHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-      return const DownloadComponent(
-        inputTextToGenerate: "text to generate",
-        qrColor: Color(0xff05668D),
-        backgroundQrColor: Color(0xffac2d7a),
-        qrGap: true,
+      String? inputTextToGenerate = params["inputTextToGenerate"]?.first;
+      int? qrColor = int.parse(params["qrColorToDownload"]!.first);
+      int? backgroundQrColor = int.parse(params["backgroundQrColor"]!.first);
+      bool? qrGap = (params["gapState"]!.first.toLowerCase() == "true");
+      return DownloadComponent(
+        inputTextToGenerate: inputTextToGenerate!,
+        qrColor: Color(qrColor),
+        backgroundQrColor: Color(backgroundQrColor),
+        qrGap: qrGap,
       );
     });
