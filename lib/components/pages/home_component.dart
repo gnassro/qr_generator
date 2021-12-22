@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import '../../libraries/global_colors.dart' as global_colors;
 import 'package:fluro/fluro.dart';
-import 'package:encrypt/encrypt.dart' as encrypt_key;
 
 import '../../config/routes/application.dart';
 import '../widgets/body_components.dart';
@@ -84,26 +83,24 @@ class _QrGenerateAppState extends State<HomeComponent> {
         child: const Text("Download"),
         onPressed: () {
           if (inputTextToGenerate != "") {
-            final key = encrypt_key.Key.fromUtf8(
-                'my 32 length key................');
-            final iv = encrypt_key.IV.fromLength(16);
-            final encrypter = encrypt_key.Encrypter(encrypt_key.AES(key));
 
+            String? routePath = "download?inputTextToGenerate=" +
+                Uri.encodeComponent(inputTextToGenerate!) +
+                "&qrColorToDownload=" +
+                qrColorToDownload!.value.toString() +
+                "&backgroundQrColor=" +
+                backgroundQrColorToDownload!.value.toString() +
+                "&gapState=" + gapState.toString();
             Application.router.navigateTo(
                 context,
-                "download?inputTextToGenerate=" +
-                    encrypter.encrypt(inputTextToGenerate!, iv: iv).toString() +
-                    "&qrColorToDownload=" +
-                    qrColorToDownload!.value.toString() +
-                    "&backgroundQrColor=" +
-                    backgroundQrColorToDownload!.value.toString() +
-                    "&gapState=" + gapState.toString(),
+                routePath
+                ,
                 transition: TransitionType.inFromBottom,
                 transitionDuration: const Duration(milliseconds: 600)
             ).then((result) {
               setState(() {
                 if (result != null) {
-                  inputTextToGenerate = result["inputTextToGenerate"];
+                  inputTextToGenerate = Uri.decodeComponent(result["inputTextToGenerate"]);
                   qrColorToDownload = result["qrColor"];
                   backgroundQrColorToDownload = result["backgroundQrColor"];
                   gapState = result["qrGap"];

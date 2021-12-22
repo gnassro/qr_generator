@@ -7,7 +7,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:encrypt/encrypt.dart' as encrypt_key;
 
 import '../widgets/body_components.dart';
 import '../../config/monetize/ad_helper.dart';
@@ -65,16 +64,13 @@ class _QrDownloadAppState extends State<DownloadComponent> {
   }
   @override
   Widget build(BuildContext context) {
-    final key = encrypt_key.Key.fromUtf8('my 32 length key................');
-    final iv = encrypt_key.IV.fromLength(16);
-    final encrypter = encrypt_key.Encrypter(encrypt_key.AES(key));
 
     return WillPopScope(
         onWillPop: () async {
           FluroRouter.appRouter.pop(
               context,
               {
-                "inputTextToGenerate" : encrypter.encrypt(widget.inputTextToGenerate!, iv: iv).toString(),
+                "inputTextToGenerate" : Uri.encodeComponent(widget.inputTextToGenerate!),
                 "qrColor" : qrColor,
                 "backgroundQrColor" : backgroundQrColor,
                 "qrGap" : widget.qrGap
@@ -93,7 +89,7 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                 FluroRouter.appRouter.pop(
                     context,
                     {
-                      "inputTextToGenerate" : encrypter.encrypt(widget.inputTextToGenerate!, iv: iv).toString(),
+                      "inputTextToGenerate" : Uri.encodeComponent(widget.inputTextToGenerate!),
                       "qrColor" : qrColor,
                       "backgroundQrColor" : backgroundQrColor,
                       "qrGap" : widget.qrGap

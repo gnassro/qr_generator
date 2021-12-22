@@ -3,7 +3,6 @@ import '../../components/pages/home_component.dart';
 import '../../components/pages/download_component.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:encrypt/encrypt.dart' as encrypt_key;
 
 
 
@@ -19,11 +18,8 @@ var rootHandler = Handler(
 
 var downloadHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-      final key = encrypt_key.Key.fromUtf8('my 32 length key................');
-      final iv = encrypt_key.IV.fromLength(16);
-      final encrypter = encrypt_key.Encrypter(encrypt_key.AES(key));
 
-      String? inputTextToGenerate = encrypter.decrypt64(params["inputTextToGenerate"]!.first, iv: iv);
+      String? inputTextToGenerate = Uri.decodeComponent(params["inputTextToGenerate"]!.first);
 
       int? qrColor = int.parse(params["qrColorToDownload"]!.first);
       int? backgroundQrColor = int.parse(params["backgroundQrColor"]!.first);
