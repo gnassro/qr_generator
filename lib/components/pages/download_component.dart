@@ -64,12 +64,13 @@ class _QrDownloadAppState extends State<DownloadComponent> {
   }
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
         onWillPop: () async {
           FluroRouter.appRouter.pop(
               context,
               {
-                "inputTextToGenerate" : widget.inputTextToGenerate,
+                "inputTextToGenerate" : Uri.encodeComponent(widget.inputTextToGenerate!),
                 "qrColor" : qrColor,
                 "backgroundQrColor" : backgroundQrColor,
                 "qrGap" : widget.qrGap
@@ -88,7 +89,7 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                 FluroRouter.appRouter.pop(
                     context,
                     {
-                      "inputTextToGenerate" : widget.inputTextToGenerate,
+                      "inputTextToGenerate" : Uri.encodeComponent(widget.inputTextToGenerate!),
                       "qrColor" : qrColor,
                       "backgroundQrColor" : backgroundQrColor,
                       "qrGap" : widget.qrGap
@@ -199,10 +200,16 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                       setState(() {
                         _isUserRewarded = false;
                       });
+                      _capturePng(
+                          textToGenerate: widget.inputTextToGenerate,
+                          qrColor: qrColor,
+                          backgroundColor: backgroundQrColor,
+                          imageSize: imageSize,
+                          qrGap: widget.qrGap
+                      );
                       qrBody.showSnackBar(
                           context: context,
-                          message: "Please enable the internet connection to support us by showing video Ads",
-                          backgroundColor: global_colors.alertColor
+                          message: "The image is saved in the Gallery"
                       );
                       _loadRewardedAd();
                     }

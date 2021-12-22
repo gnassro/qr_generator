@@ -82,24 +82,37 @@ class _QrGenerateAppState extends State<HomeComponent> {
         ),
         child: const Text("Download"),
         onPressed: () {
-          Application.router.navigateTo(
-            context,
-            "download?inputTextToGenerate=" + inputTextToGenerate! +
-                "&qrColorToDownload=" + qrColorToDownload!.value.toString() +
-                "&backgroundQrColor=" + backgroundQrColorToDownload!.value.toString() +
-              "&gapState=" + gapState.toString(),
-            transition: TransitionType.inFromBottom,
-            transitionDuration: const Duration(milliseconds: 600)
-          ).then((result) {
-            setState(() {
-              if (result != null) {
-                inputTextToGenerate = result["inputTextToGenerate"];
-                qrColorToDownload = result["qrColor"];
-                backgroundQrColorToDownload = result["backgroundQrColor"];
-                gapState = result["qrGap"];
-              }
+          if (inputTextToGenerate != "") {
+
+            String? routePath = "download?inputTextToGenerate=" +
+                Uri.encodeComponent(inputTextToGenerate!) +
+                "&qrColorToDownload=" +
+                qrColorToDownload!.value.toString() +
+                "&backgroundQrColor=" +
+                backgroundQrColorToDownload!.value.toString() +
+                "&gapState=" + gapState.toString();
+            Application.router.navigateTo(
+                context,
+                routePath
+                ,
+                transition: TransitionType.inFromBottom,
+                transitionDuration: const Duration(milliseconds: 600)
+            ).then((result) {
+              setState(() {
+                if (result != null) {
+                  inputTextToGenerate = Uri.decodeComponent(result["inputTextToGenerate"]);
+                  qrColorToDownload = result["qrColor"];
+                  backgroundQrColorToDownload = result["backgroundQrColor"];
+                  gapState = result["qrGap"];
+                }
+              });
             });
-          });
+          } else {
+            qrBody.showSnackBar(
+                context: context,
+              message: "Please fill the blank"
+            );
+          }
         },
       ),
     );

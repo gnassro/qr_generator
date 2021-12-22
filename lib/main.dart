@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -8,7 +9,9 @@ import 'components/app/app_component.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Admob
-  MobileAds.instance.initialize();
+  if (Platform.isAndroid) {
+    MobileAds.instance.initialize();
+  }
   // .env load
   await FlutterConfig.loadEnvVariables();
 

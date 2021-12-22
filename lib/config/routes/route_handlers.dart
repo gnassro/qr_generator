@@ -5,6 +5,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
 
+
 var notFound = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
       return ;
@@ -17,12 +18,14 @@ var rootHandler = Handler(
 
 var downloadHandler = Handler(
     handlerFunc: (BuildContext? context, Map<String, List<String>> params) {
-      String? inputTextToGenerate = params["inputTextToGenerate"]?.first;
+
+      String? inputTextToGenerate = Uri.decodeComponent(params["inputTextToGenerate"]!.first);
+
       int? qrColor = int.parse(params["qrColorToDownload"]!.first);
       int? backgroundQrColor = int.parse(params["backgroundQrColor"]!.first);
       bool? qrGap = (params["gapState"]!.first.toLowerCase() == "true");
       return DownloadComponent(
-        inputTextToGenerate: inputTextToGenerate!,
+        inputTextToGenerate: inputTextToGenerate,
         qrColor: Color(qrColor),
         backgroundQrColor: Color(backgroundQrColor),
         qrGap: qrGap,
