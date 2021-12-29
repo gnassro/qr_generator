@@ -51,4 +51,4 @@ samples, guidance on mobile development, and a full API reference.
 
 ## License
 
-This Project is under [MIT license](https://github.com/gnassro/KahlaBidha/blob/main/LICENSE)
+This Project is under [MIT license](https://github.com/gnassro/qr_generator/blob/main/LICENSE)
