@@ -2,7 +2,7 @@
 
 Flutter project generate QR Code as png
 
-<img src="https://i.imgur.com/7J64Ue1.png" height="400"/> <img src="https://i.imgur.com/pvu0j1t.png" height="400"/>
+<img src="https://i.imgur.com/7J64Ue1.png" height="400"/> <img src="https://i.imgur.com/pvu0j1t.png" height="400"/> <img src="https://i.imgur.com/S60cvqC.png" height="400"/>
 
 ## Getting Started
 
