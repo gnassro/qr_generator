@@ -29,12 +29,10 @@ That's all !!! **Enjoy :D**
 
 ## Note
 
-You have to change the package name of your application if you want to start your project from this repository (ex: com.username.appname).
-
-To change it just use this package [change_app_package_name](https://pub.dev/packages/change_app_package_name) and follow all steps.
+1. You have to change the package name of your application if you want to start your project from this repository (ex: com.username.appname). To change it just use this package [change_app_package_name](https://pub.dev/packages/change_app_package_name) and follow all steps.
 
 
-Don't forget to rename `.environment` to `.env` and update the content with your Admob.
+2. Don't forget to rename `.environment` to `.env` and update the content with your Admob.
 
 ## Pull Requests
 
