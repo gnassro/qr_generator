@@ -13,31 +13,34 @@ import '../../config/monetize/ad_helper.dart';
 import '../../libraries/global_colors.dart' as global_colors;
 import '../widgets/color_picker.dart';
 
+// For now the download work only on Android and IOS (not tested), and the web not implemented yet
+
 class DownloadComponent extends StatefulWidget {
-  const DownloadComponent({
-    Key? key,
-    this.inputTextToGenerate = "",
-    this.qrColor,
-    this.backgroundQrColor,
-    this.qrGap
-  }) : super(key: key);
+  const DownloadComponent(
+      {Key? key,
+      this.inputTextToGenerate = "",
+      this.qrColor,
+      this.backgroundQrColor,
+      this.qrGap})
+      : super(key: key);
 
   final Color? qrColor;
   final Color? backgroundQrColor;
   final String? inputTextToGenerate;
   final bool? qrGap;
+
   @override
   _QrDownloadAppState createState() => _QrDownloadAppState();
 }
 
 class _QrDownloadAppState extends State<DownloadComponent> {
-
-  Color? qrColor,backgroundQrColor;
+  Color? qrColor, backgroundQrColor;
   double? imageSize;
   BodyCompo qrBody = BodyCompo();
 
   late RewardedAd? _rewardedAd;
   bool? _isRewardedAdReady, _isUserRewarded;
+
   Future<InitializationStatus> _initGoogleMobileAds() {
     return MobileAds.instance.initialize();
   }
@@ -59,23 +62,21 @@ class _QrDownloadAppState extends State<DownloadComponent> {
 
   @override
   void dispose() {
-    if(_isRewardedAdReady!) _rewardedAd?.dispose();
+    if (_isRewardedAdReady!) _rewardedAd?.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
         onWillPop: () async {
-          FluroRouter.appRouter.pop(
-              context,
-              {
-                "inputTextToGenerate" : Uri.encodeComponent(widget.inputTextToGenerate!),
-                "qrColor" : qrColor,
-                "backgroundQrColor" : backgroundQrColor,
-                "qrGap" : widget.qrGap
-              }
-          );
+          FluroRouter.appRouter.pop(context, {
+            "inputTextToGenerate":
+                Uri.encodeComponent(widget.inputTextToGenerate!),
+            "qrColor": qrColor,
+            "backgroundQrColor": backgroundQrColor,
+            "qrGap": widget.qrGap
+          });
 
           return Future.value(false);
         },
@@ -86,149 +87,149 @@ class _QrDownloadAppState extends State<DownloadComponent> {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                FluroRouter.appRouter.pop(
-                    context,
-                    {
-                      "inputTextToGenerate" : Uri.encodeComponent(widget.inputTextToGenerate!),
-                      "qrColor" : qrColor,
-                      "backgroundQrColor" : backgroundQrColor,
-                      "qrGap" : widget.qrGap
-                    }
-                );
+                FluroRouter.appRouter.pop(context, {
+                  "inputTextToGenerate":
+                      Uri.encodeComponent(widget.inputTextToGenerate!),
+                  "qrColor": qrColor,
+                  "backgroundQrColor": backgroundQrColor,
+                  "qrGap": widget.qrGap
+                });
               },
             ),
           ),
           body: Center(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Row(
+            child: ListView(
+              shrinkWrap: true,
               children: [
-                Expanded(
-                  child: FractionallySizedBox(
-                    widthFactor: 0.9,
-                    child: ElevatedButton(
-                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(global_colors.elementBackgroundColor), foregroundColor: MaterialStateProperty.all(global_colors.whiteColor)),
-                        onPressed: () {
-                          ColorQrPicker().showColorPicker(
-                              context: context,
-                              pickedColor: qrColor,
-                              onColorChanged: (color) {
-                                setState(() {
-                                  qrColor = color;
-                                });
-                              });
-                        },
-                        child: const Text('QR Color')),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FractionallySizedBox(
+                        widthFactor: 0.9,
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    global_colors.elementBackgroundColor),
+                                foregroundColor: MaterialStateProperty.all(
+                                    global_colors.whiteColor)),
+                            onPressed: () {
+                              ColorQrPicker().showColorPicker(
+                                  context: context,
+                                  pickedColor: qrColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      qrColor = color;
+                                    });
+                                  });
+                            },
+                            child: const Text('QR Color')),
+                      ),
+                    ),
+                    Expanded(
+                      child: FractionallySizedBox(
+                        widthFactor: 0.9,
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    global_colors.elementBackgroundColor),
+                                foregroundColor: MaterialStateProperty.all(
+                                    global_colors.whiteColor)),
+                            onPressed: () {
+                              ColorQrPicker().showColorPicker(
+                                  context: context,
+                                  pickedColor: backgroundQrColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      backgroundQrColor = color;
+                                    });
+                                  });
+                            },
+                            child: const Text('Background Color')),
+                      ),
+                    )
+                  ],
                 ),
-                Expanded(
-                  child: FractionallySizedBox(
-                    widthFactor: 0.9,
-                    child: ElevatedButton(
-                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(global_colors.elementBackgroundColor), foregroundColor: MaterialStateProperty.all(global_colors.whiteColor)),
-                        onPressed: () {
-                          ColorQrPicker().showColorPicker(
-                              context: context,
-                              pickedColor: backgroundQrColor,
-                              onColorChanged: (color) {
-                                setState(() {
-                                  backgroundQrColor = color;
-                                });
-                              });
-                        },
-                        child: const Text('Background Color')),
-                  ),
-                )
-              ],
-            ),
-            CustomRadioButton(
-              enableShape: true,
-              elevation: 0,
-              spacing: 2.0,
-              enableButtonWrap: true,
-              absoluteZeroSpacing: false,
-              selectedBorderColor: global_colors.primaryColor!,
-              unSelectedBorderColor: global_colors.primaryColor!,
-              unSelectedColor: global_colors.appBackgroundColor!,
-              buttonLables: const [
-                '100x',
-                '500x',
-                '1000x'
-              ],
-              buttonValues: const [
-                '100',
-                '500',
-                '1000'
-              ],
-              defaultSelected: '500',
-              buttonTextStyle: const ButtonTextStyle(selectedColor: Colors.white, unSelectedColor: Colors.black, textStyle: TextStyle(fontSize: 16)),
-              radioButtonValue: (value) {
-                setState(() {
-                  imageSize = double.parse(value.toString());
-                });
-              },
-              selectedColor: global_colors.elementBackgroundColor!,
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: global_colors.primaryColor!,
-                  padding: const EdgeInsets.all(35.0),
-                  minimumSize: Size(MediaQuery.of(context).size.width * 0.6, MediaQuery.of(context).size.width * 0.6),
-                  shape: const CircleBorder(),
-                  side: BorderSide(width: 6.0, color: global_colors.elementBackgroundColor!),
+                CustomRadioButton(
+                  enableShape: true,
+                  elevation: 0,
+                  spacing: 2.0,
+                  enableButtonWrap: true,
+                  absoluteZeroSpacing: false,
+                  selectedBorderColor: global_colors.primaryColor!,
+                  unSelectedBorderColor: global_colors.primaryColor!,
+                  unSelectedColor: global_colors.appBackgroundColor!,
+                  buttonLables: const ['100x', '500x', '1000x'],
+                  buttonValues: const ['100', '500', '1000'],
+                  defaultSelected: '500',
+                  buttonTextStyle: const ButtonTextStyle(
+                      selectedColor: Colors.white,
+                      unSelectedColor: Colors.black,
+                      textStyle: TextStyle(fontSize: 16)),
+                  radioButtonValue: (value) {
+                    setState(() {
+                      imageSize = double.parse(value.toString());
+                    });
+                  },
+                  selectedColor: global_colors.elementBackgroundColor!,
                 ),
-                onPressed: () {
-                  if (widget.inputTextToGenerate == "") {
-                    qrBody.showSnackBar(
-                        context: context,
-                        message: "You must at least tap one character to generate",
-                        backgroundColor: global_colors.alertColor
-                    );
-                  } else {
-                    if (_isRewardedAdReady!) {
-                      _rewardedAd?.show(
-                          onUserEarnedReward: (RewardedAd ad, RewardItem reward) {
+                const SizedBox(
+                  height: 20.0,
+                ),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: global_colors.primaryColor!,
+                      padding: const EdgeInsets.all(35.0),
+                      minimumSize: Size(MediaQuery.of(context).size.width * 0.6,
+                          MediaQuery.of(context).size.width * 0.6),
+                      shape: const CircleBorder(),
+                      side: BorderSide(
+                          width: 6.0,
+                          color: global_colors.elementBackgroundColor!),
+                    ),
+                    onPressed: () {
+                      if (widget.inputTextToGenerate == "") {
+                        qrBody.showSnackBar(
+                            context: context,
+                            message:
+                                "You must at least tap one character to generate",
+                            backgroundColor: global_colors.alertColor);
+                      } else {
+                        if (_isRewardedAdReady!) {
+                          _rewardedAd?.show(onUserEarnedReward:
+                              (RewardedAd ad, RewardItem reward) {
                             setState(() {
                               _isUserRewarded = true;
                             });
                           });
-                    } else {
-                      setState(() {
-                        _isUserRewarded = false;
-                      });
-                      _capturePng(
-                          textToGenerate: widget.inputTextToGenerate,
-                          qrColor: qrColor,
-                          backgroundColor: backgroundQrColor,
-                          imageSize: imageSize,
-                          qrGap: widget.qrGap
-                      );
-                      qrBody.showSnackBar(
-                          context: context,
-                          message: "The image is saved in the Gallery"
-                      );
-                      _loadRewardedAd();
-                    }
-
-                  }
-                },
-                child: Column(
-                  children: const [
-                    Icon(
-                      Icons.downloading_sharp,
-                      size: 100.0,
-                    ),
-                  ],
-                )),
-          ],
-        ),
-      ),
-    )
-    );
+                        } else {
+                          setState(() {
+                            _isUserRewarded = false;
+                          });
+                          _capturePng(
+                              textToGenerate: widget.inputTextToGenerate,
+                              qrColor: qrColor,
+                              backgroundColor: backgroundQrColor,
+                              imageSize: imageSize,
+                              qrGap: widget.qrGap);
+                          qrBody.showSnackBar(
+                              context: context,
+                              message: "The image is saved in the Gallery");
+                          _loadRewardedAd();
+                        }
+                      }
+                    },
+                    child: Column(
+                      children: const [
+                        Icon(
+                          Icons.downloading_sharp,
+                          size: 100.0,
+                        ),
+                      ],
+                    )),
+              ],
+            ),
+          ),
+        ));
   }
 
   void _loadRewardedAd() {
@@ -245,18 +246,16 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                 _isRewardedAdReady = false;
               });
               _loadRewardedAd();
-              if(_isUserRewarded!) {
+              if (_isUserRewarded!) {
                 _capturePng(
                     textToGenerate: widget.inputTextToGenerate,
                     qrColor: qrColor,
                     backgroundColor: backgroundQrColor,
                     imageSize: imageSize,
-                    qrGap: widget.qrGap
-                );
+                    qrGap: widget.qrGap);
                 qrBody.showSnackBar(
                     context: context,
-                    message: "The image is saved in the Gallery"
-                );
+                    message: "The image is saved in the Gallery");
                 setState(() {
                   _isUserRewarded = false;
                 });
@@ -266,9 +265,9 @@ class _QrDownloadAppState extends State<DownloadComponent> {
                 });
                 qrBody.showSnackBar(
                     context: context,
-                    message: "You See the full video ads to download the QR Code",
-                    backgroundColor: global_colors.alertColor
-                );
+                    message:
+                        "You See the full video ads to download the QR Code",
+                    backgroundColor: global_colors.alertColor);
               }
             },
           );
@@ -286,6 +285,8 @@ class _QrDownloadAppState extends State<DownloadComponent> {
     );
   }
 
+  // this is the download method, you must work on it if you want your app support web or other platforms
+
   Future<void> _capturePng({
     required String? textToGenerate,
     Color? qrColor = Colors.black,
@@ -299,22 +300,23 @@ class _QrDownloadAppState extends State<DownloadComponent> {
         await Permission.storage.request();
       }
 
-      if(!permStatus.isDenied) {
+      if (!permStatus.isDenied) {
         final image = await QrPainter(
-            color: qrColor!,
-            emptyColor: backgroundColor!,
-            data: textToGenerate!,
-            version: QrVersions.auto,
-            gapless: !qrGap!
-        ).toImageData(imageSize!);
+                color: qrColor!,
+                emptyColor: backgroundColor!,
+                data: textToGenerate!,
+                version: QrVersions.auto,
+                gapless: !qrGap!)
+            .toImageData(imageSize!);
 
         final directory = await getApplicationDocumentsDirectory();
-        final imagePath = await File('${directory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png').create();
+        final imagePath = await File(
+                '${directory.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.png')
+            .create();
         await imagePath.writeAsBytes(image!.buffer.asUint8List());
 
         await ImageGallerySaver.saveFile(imagePath.path);
       }
-
     } catch (e) {
       rethrow;
     }
