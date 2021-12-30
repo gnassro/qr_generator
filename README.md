@@ -1,4 +1,4 @@
-# QRGenerator
+# QRGenerator [Demo](https://play.google.com/store/apps/details?id=com.gnassro.qrgenerator)
 
 Flutter project generate QR Code as png
 
