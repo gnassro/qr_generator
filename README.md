@@ -1,6 +1,6 @@
 # QRGenerator [Demo](https://play.google.com/store/apps/details?id=com.gnassro.qrgenerator)
 
-Flutter project generate QR Code as png
+Flutter project generate QR Code as png with Admob
 
 <img src="https://i.imgur.com/7J64Ue1.png" height="400"/> <img src="https://i.imgur.com/pvu0j1t.png" height="400"/> <img src="https://i.imgur.com/S60cvqC.png" height="400"/>
 
